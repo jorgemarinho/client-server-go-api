@@ -114,7 +114,7 @@ func saveCotacaoDatabase(cotacao CotacaoUsdbrl) error {
 		if err != nil {
 			panic(err)
 		}
-		db.AutoMigrate(ApiResultados{})
+		db.AutoMigrate(cotacao.Usdbrl)
 		err = db.Create(cotacao.Usdbrl).Error
 		if err != nil {
 			return err
