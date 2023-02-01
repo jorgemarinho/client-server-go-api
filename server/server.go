@@ -29,6 +29,7 @@ type CotacaoUsdbrl struct {
 }
 
 type ApiResultados struct {
+	ID  int    `gorm:"primaryKey"`
 	Bid string `json:"bid"`
 }
 
@@ -92,7 +93,10 @@ func buscaCotacao() (*CotacaoUsdbrl, error) {
 		return nil, error
 	}
 
-	error = saveCotacaoDatabase(c)
+	var apiResultados ApiResultados
+	apiResultados.Bid = c.Usdbrl.Bid
+
+	error = saveCotacaoDatabase(apiResultados)
 
 	if error != nil {
 		return nil, error
@@ -101,7 +105,7 @@ func buscaCotacao() (*CotacaoUsdbrl, error) {
 	return &c, nil
 }
 
-func saveCotacaoDatabase(cotacao CotacaoUsdbrl) error {
+func saveCotacaoDatabase(cotacao ApiResultados) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*10)
 	defer cancel()
@@ -114,8 +118,8 @@ func saveCotacaoDatabase(cotacao CotacaoUsdbrl) error {
 		if err != nil {
 			panic(err)
 		}
-		db.AutoMigrate(cotacao.Usdbrl)
-		err = db.Create(cotacao.Usdbrl).Error
+		db.AutoMigrate(&ApiResultados{})
+		err = db.Create(&cotacao).Error
 		if err != nil {
 			return err
 		}
